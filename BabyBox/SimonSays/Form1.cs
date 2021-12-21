@@ -5,9 +5,20 @@ namespace SimonSays
 {
     public partial class Form1 : Form
     {
+        private SerialMessenger serialMessenger;
+        private Timer readMessageTimer;
+        // TODO: Below fill in the actual Arduino COM port.
+        private string port = "COM6";
+        private int speed = 9600;
+
         public Form1()
         {
-            InitializeComponent();       
+            InitializeComponent();
+            MessageBuilder messageBuilder = new MessageBuilder();
+            serialMessenger = new SerialMessenger(port, speed, messageBuilder);
+
+            readMessageTimer = new Timer();
+            readMessageTimer.Interval = 10;
         }
 
         int count = 0;
@@ -22,6 +33,7 @@ namespace SimonSays
 
         public  void BtnStart_Click(object sender, EventArgs e)
         {
+            serialMessenger.Connect();
             disableBoxes();
             RandomNumber randomNumber = new RandomNumber(this);
             randomNumber.GenerateNumber();
@@ -39,7 +51,8 @@ namespace SimonSays
 
         public void rightButton()
         {
-           // MessageBox.Show("This is the right Color");
+            // MessageBox.Show("This is the right Color");
+            serialMessenger.SendMessage("12");
         }
        
         public void addScore()
@@ -108,6 +121,7 @@ namespace SimonSays
 
         private void BtnStop_Click(object sender, EventArgs e)
         {
+            serialMessenger.Disconnect();
             Application.Exit();
         }
 
